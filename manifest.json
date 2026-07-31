@@ -2,7 +2,7 @@
   "name": "The Desk — Curated News",
   "short_name": "The Desk",
   "description": "A hand-curated news feed. No algorithm, just journalists worth reading.",
-  "start_url": "./index.html",
+  "start_url": "desk/index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
@@ -15,7 +15,7 @@
     { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "share_target": {
-    "action": "share-target.html",
+    "action": "/desk/share-target.html",
     "method": "GET",
     "params": {
       "title": "title",
