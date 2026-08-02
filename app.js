@@ -97,19 +97,27 @@ const CHANNEL_KEYMAP = {
 function parseSheetDate(raw) {
   const s = String(raw || "").trim();
   if (!s) return null;
+  const timeRe = "(?:[ T](\\d{1,2}):(\\d{2})(?::(\\d{2}))?)?";
 
-  // ISO-style, year leads: YYYY-MM-DD (unambiguous — always Y/M/D).
-  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  // ISO-style, year leads: YYYY-MM-DD, optionally with a time (unambiguous — always Y/M/D).
+  let m = s.match(new RegExp("^(\\d{4})-(\\d{1,2})-(\\d{1,2})" + timeRe));
   if (m) {
-    const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    const d = new Date(
+      Number(m[1]), Number(m[2]) - 1, Number(m[3]),
+      Number(m[4] || 0), Number(m[5] || 0), Number(m[6] || 0)
+    );
     if (!isNaN(d.getTime())) return d;
   }
 
-  // Day-first style, year trails: DD-MM-YYYY or DD/MM/YYYY.
-  m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+  // Day-first style, year trails: DD-MM-YYYY or DD/MM/YYYY, optionally with a time
+  // (this is what the share flow writes, e.g. "02/08/2026 15:01:33").
+  m = s.match(new RegExp("^(\\d{1,2})[-/](\\d{1,2})[-/](\\d{4})" + timeRe + "$"));
   if (m) {
     const day = Number(m[1]), month = Number(m[2]), year = Number(m[3]);
-    const d = new Date(year, month - 1, day);
+    const d = new Date(
+      year, month - 1, day,
+      Number(m[4] || 0), Number(m[5] || 0), Number(m[6] || 0)
+    );
     if (!isNaN(d.getTime())) return d;
   }
 
