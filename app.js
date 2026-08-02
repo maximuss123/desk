@@ -94,9 +94,33 @@ const CHANNEL_KEYMAP = {
   language: "language",
 };
 
+function parseSheetDate(raw) {
+  const s = String(raw || "").trim();
+  if (!s) return null;
+
+  // ISO-style, year leads: YYYY-MM-DD (unambiguous — always Y/M/D).
+  let m = s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) {
+    const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+    if (!isNaN(d.getTime())) return d;
+  }
+
+  // Day-first style, year trails: DD-MM-YYYY or DD/MM/YYYY.
+  m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})$/);
+  if (m) {
+    const day = Number(m[1]), month = Number(m[2]), year = Number(m[3]);
+    const d = new Date(year, month - 1, day);
+    if (!isNaN(d.getTime())) return d;
+  }
+
+  // Anything else: let the browser take its best guess.
+  const fallback = new Date(s);
+  return isNaN(fallback.getTime()) ? null : fallback;
+}
+
 function relativeTime(dateLike, lang) {
-  const d = new Date(dateLike);
-  if (isNaN(d.getTime())) return String(dateLike || "");
+  const d = parseSheetDate(dateLike);
+  if (!d) return String(dateLike || "");
   const diffMs = Date.now() - d.getTime();
   const mins = Math.floor(diffMs / 60000);
   const hrs = Math.floor(mins / 60);
@@ -128,7 +152,8 @@ function escapeHtml(s) {
    DATA FETCHING
    ================================================================== */
 function fetchCsv(url, keyMap) {
-  return fetch(url, { cache: "no-store" })
+  const bustUrl = url + (url.indexOf("?") === -1 ? "?" : "&") + "_=" + Date.now();
+  return fetch(bustUrl, { cache: "no-store" })
     .then((res) => {
       if (!res.ok) throw new Error("Sheet fetch failed: " + res.status);
       return res.text();
@@ -299,7 +324,7 @@ function renderFeed() {
     return renderStateBlock({ title: t("errorArticlesTitle", state.lang), body: t("errorArticlesBody", state.lang) });
   }
   const rows = langFilter(state.articles).slice().sort(
-    (a, b) => new Date(b.dateAdded) - new Date(a.dateAdded)
+    (a, b) => (parseSheetDate(b.dateAdded)?.getTime() || 0) - (parseSheetDate(a.dateAdded)?.getTime() || 0)
   );
   const header = `
     <p class="section-label">${escapeHtml(t("tabFeed", state.lang))}</p>
