@@ -18,7 +18,7 @@ const CONFIG = {
   // the browser (YouTube does not allow direct cross-origin reads).
   // This is a third-party relay with no uptime guarantee — swap it
   // for your own proxy later if you want something more reliable.
-  corsProxyForYouTube: "https://api.allorigins.win/raw?url=",
+  corsProxyForYouTube: "https://api.codetabs.com/v1/proxy?quest=",
 
   // How many recent videos to pull per channel.
   videosPerChannel: 4,
