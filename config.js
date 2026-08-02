@@ -8,11 +8,11 @@ const CONFIG = {
   // Published-to-web CSV link for your ARTICLES sheet.
   // Google Sheet → File → Share → Publish to web → select the
   // "Articles" tab specifically → format: CSV → copy the URL here.
-  articlesCsvUrl: "",
+  articlesCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQXziCENzYg2-xyJkim6bxJDrC5DYIo8ftQVaPUdwGb5EnNse4uo-QL1aC9OB9XkUldv0KXmXEKp57D/pub?gid=0&single=true&output=csv",
 
   // Published-to-web CSV link for your YOUTUBE CHANNELS sheet
   // (same steps, but select the "Channels" tab).
-  channelsCsvUrl: "",
+  channelsCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQXziCENzYg2-xyJkim6bxJDrC5DYIo8ftQVaPUdwGb5EnNse4uo-QL1aC9OB9XkUldv0KXmXEKp57D/pub?gid=1084955648&single=true&output=csv",
 
   // Used only to read YouTube's public per-channel RSS feeds from
   // the browser (YouTube does not allow direct cross-origin reads).
@@ -29,7 +29,7 @@ const CONFIG = {
   // The Web App URL from your Apps Script deployment (see README,
   // section 5) — this is what lets the Share page add a row to your
   // Articles sheet directly. Leave blank to keep sharing disabled.
-  appsScriptUrl: "",
+  appsScriptUrl: "https://script.google.com/macros/s/AKfycbwlA9a0R8m8DShYBiuN700QwuBeAnhYMVa_xYV2cJ_5XpjB1lXAUFS3sbxW45aB6cYDcQ/exec",
 
   // Category chips shown on the Share page. Edit freely — these are
   // just quick-tap suggestions, not a fixed taxonomy.
