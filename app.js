@@ -39,7 +39,7 @@ function t(key, lang) {
    STATE
    ================================================================== */
 const state = {
-  lang: "en",
+  lang: "en-GB",
   tab: "bulletin", // bulletin | feed | live | categories
   articles: null,      // parsed rows, or null before first fetch
   articlesError: false,
