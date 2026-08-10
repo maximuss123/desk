@@ -1,9 +1,10 @@
 /* ==================================================================
    SHARE PAGE LOGIC
    Reads whatever the OS share sheet handed us (title/text/url),
-   guesses the article link + a headline, and lets the person tap a
-   category + language before sending it straight into the Articles
-   sheet via the Apps Script endpoint in CONFIG.appsScriptUrl.
+   guesses whether it's an article or a video, pre-fills what it can,
+   and lets the person tap a category + language before sending it
+   into the right sheet via the Apps Script endpoint in
+   CONFIG.appsScriptUrl.
    ================================================================== */
 
 function escapeHtml(s) {
@@ -27,6 +28,15 @@ function outletFromUrl(url) {
   }
 }
 
+function isVideoUrl(url) {
+  try {
+    const host = new URL(url).hostname.replace(/^www\./, "");
+    return host === "youtube.com" || host === "m.youtube.com" || host === "youtu.be";
+  } catch (e) {
+    return false;
+  }
+}
+
 function buildShareData() {
   const params = new URLSearchParams(window.location.search);
   const sharedTitle = (params.get("title") || "").trim();
@@ -35,16 +45,17 @@ function buildShareData() {
 
   const link = sharedUrl || extractUrl(sharedText) || extractUrl(sharedTitle) || "";
 
-  let headline = sharedTitle;
-  if (!headline || headline === link) {
-    headline = sharedText.split(link).join("").trim();
+  let title = sharedTitle;
+  if (!title || title === link) {
+    title = sharedText.split(link).join("").trim();
   }
 
-  return { link, headline, outlet: outletFromUrl(link) };
+  return { link, title, outlet: outletFromUrl(link), isVideo: isVideoUrl(link) };
 }
 
 const shareData = buildShareData();
 const formState = {
+  type: shareData.isVideo ? "video" : "article",
   category: "",
   language: (window.CONFIG && CONFIG.defaultLanguage) || "English",
   bulletin: false,
@@ -74,8 +85,42 @@ function renderNoLink(root) {
     <div class="share-card">
       <div class="state-block" style="padding:10px;">
         <p class="state-title">No link found</p>
-        <p>Open this page by sharing an article link into The Desk from your browser or news app.</p>
+        <p>Open this page by sharing an article or video link into The Desk from your browser or another app.</p>
       </div>
+    </div>`;
+}
+
+function articleFieldsHtml() {
+  return `
+    <div class="field">
+      <span class="field-label">Headline</span>
+      <input type="text" id="headlineInput" value="${escapeHtml(shareData.title)}" placeholder="Headline" />
+    </div>
+    <div class="field">
+      <span class="field-label">Outlet</span>
+      <input type="text" id="outletInput" value="${escapeHtml(shareData.outlet)}" placeholder="Outlet" />
+    </div>
+    <div class="field">
+      <span class="field-label">Journalist (optional)</span>
+      <input type="text" id="journalistInput" placeholder="Byline" />
+    </div>
+    <div class="field">
+      <label class="toggle-row">
+        <input type="checkbox" id="bulletinToggle" ${formState.bulletin ? "checked" : ""} />
+        Feature in today's Bulletin
+      </label>
+    </div>`;
+}
+
+function videoFieldsHtml() {
+  return `
+    <div class="field">
+      <span class="field-label">Title</span>
+      <input type="text" id="titleInput" value="${escapeHtml(shareData.title)}" placeholder="Video title" />
+    </div>
+    <div class="field">
+      <span class="field-label">Channel (optional)</span>
+      <input type="text" id="channelInput" placeholder="Channel name" />
     </div>`;
 }
 
@@ -83,21 +128,14 @@ function renderForm(root) {
   root.innerHTML = `
     <div class="share-card" id="shareCard">
       <div class="field">
-        <span class="field-label">Article</span>
+        <span class="field-label">Type</span>
+        ${chipGroupHtml("type", ["Article", "Video"], formState.type === "video" ? "Video" : "Article")}
+      </div>
+      <div class="field">
+        <span class="field-label">Link</span>
         <div class="field-link">${escapeHtml(shareData.link)}</div>
       </div>
-      <div class="field">
-        <span class="field-label">Headline</span>
-        <input type="text" id="headlineInput" value="${escapeHtml(shareData.headline)}" placeholder="Headline" />
-      </div>
-      <div class="field">
-        <span class="field-label">Outlet</span>
-        <input type="text" id="outletInput" value="${escapeHtml(shareData.outlet)}" placeholder="Outlet" />
-      </div>
-      <div class="field">
-        <span class="field-label">Journalist (optional)</span>
-        <input type="text" id="journalistInput" placeholder="Byline" />
-      </div>
+      <div id="typeFields"></div>
       <div class="field">
         <span class="field-label">Category</span>
         ${chipGroupHtml("category", CONFIG.categories, formState.category)}
@@ -106,39 +144,56 @@ function renderForm(root) {
         <span class="field-label">Language</span>
         ${chipGroupHtml("language", ["English", "Marathi"], formState.language)}
       </div>
-      <div class="field">
-        <label class="toggle-row">
-          <input type="checkbox" id="bulletinToggle" />
-          Feature in today's Bulletin
-        </label>
-      </div>
       <button class="submit-btn" id="submitBtn">Add to feed</button>
     </div>`;
+
+  document.getElementById("typeFields").innerHTML =
+    formState.type === "video" ? videoFieldsHtml() : articleFieldsHtml();
+  wireDynamicFieldEvents();
 
   root.querySelectorAll(".chip-group").forEach((group) => {
     group.addEventListener("click", (e) => {
       const btn = e.target.closest(".chip");
       if (!btn) return;
+      const groupName = group.getAttribute("data-group");
+      const value = btn.getAttribute("data-value");
+
       group.querySelectorAll(".chip").forEach((c) => c.classList.remove("selected"));
       btn.classList.add("selected");
-      const groupName = group.getAttribute("data-group");
-      formState[groupName] = btn.getAttribute("data-value");
-    });
-  });
 
-  document.getElementById("bulletinToggle").addEventListener("change", (e) => {
-    formState.bulletin = e.target.checked;
+      if (groupName === "type") {
+        formState.type = value.toLowerCase();
+        document.getElementById("typeFields").innerHTML =
+          formState.type === "video" ? videoFieldsHtml() : articleFieldsHtml();
+        wireDynamicFieldEvents();
+      } else {
+        formState[groupName] = value;
+      }
+    });
   });
 
   document.getElementById("submitBtn").addEventListener("click", submit);
 }
 
+function wireDynamicFieldEvents() {
+  const bulletinToggle = document.getElementById("bulletinToggle");
+  if (bulletinToggle) {
+    bulletinToggle.addEventListener("change", (e) => {
+      formState.bulletin = e.target.checked;
+    });
+  }
+}
+
 function renderSuccess(root) {
+  const isVideo = formState.type === "video";
   root.innerHTML = `
     <div class="share-card success-block">
       <div class="success-mark">✓</div>
       <p class="state-title">Added to your feed</p>
-      <p>It'll show up in Your Feed${formState.bulletin ? " and today's Bulletin" : ""} — the sheet can take a minute to catch up.</p>
+      <p>${isVideo
+        ? "It'll show up in the Videos tab"
+        : "It'll show up in Your Feed" + (formState.bulletin ? " and today's Bulletin" : "")
+      } — the sheet can take a minute to catch up.</p>
     </div>`;
 }
 
@@ -157,15 +212,23 @@ function submit() {
   btn.disabled = true;
   btn.textContent = "Sending…";
 
+  const isVideo = formState.type === "video";
   const payload = new URLSearchParams({
+    type: isVideo ? "video" : "article",
     link: shareData.link,
-    headline: document.getElementById("headlineInput").value.trim(),
-    outlet: document.getElementById("outletInput").value.trim(),
-    journalist: document.getElementById("journalistInput").value.trim(),
     category: formState.category,
     language: formState.language,
-    tab: formState.bulletin ? "Bulletin" : "",
   });
+
+  if (isVideo) {
+    payload.set("title", document.getElementById("titleInput").value.trim());
+    payload.set("channelName", document.getElementById("channelInput").value.trim());
+  } else {
+    payload.set("headline", document.getElementById("headlineInput").value.trim());
+    payload.set("outlet", document.getElementById("outletInput").value.trim());
+    payload.set("journalist", document.getElementById("journalistInput").value.trim());
+    payload.set("tab", formState.bulletin ? "Bulletin" : "");
+  }
 
   fetch(CONFIG.appsScriptUrl, {
     method: "POST",
