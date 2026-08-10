@@ -8,11 +8,13 @@ const STR = {
   tabBulletin:         { en: "Daily Bulletin", mr: "दैनिक बुलेटिन" },
   tabFeed:             { en: "Your Feed", mr: "तुमचा फीड" },
   tabLive:             { en: "Live News", mr: "लाइव्ह न्यूज" },
+  tabVideos:           { en: "Videos", mr: "व्हिडिओ" },
   tabCategories:       { en: "Categories", mr: "विभाग" },
   soon:                { en: "Soon", mr: "लवकरच" },
   bulletinSub:         { en: "Today's hand-picked stories.", mr: "आजच्या निवडक बातम्या." },
   feedSub:             { en: "Everything added, newest first.", mr: "जोडलेले सर्व, नवीनतम आधी." },
   liveSub:             { en: "Latest uploads from your curated news channels.", mr: "तुमच्या निवडक न्यूज चॅनेल्सवरील नवीनतम व्हिडिओ." },
+  videosSub:           { en: "Individually curated videos.", mr: "वैयक्तिकरित्या निवडलेले व्हिडिओ." },
   footerNote:          { en: "Curated by hand. Every link chosen on purpose.", mr: "हाताने निवडलेले. प्रत्येक लिंक जाणीवपूर्वक निवडलेली." },
   loadingArticles:     { en: "Fetching the latest curated links…", mr: "नवीनतम निवडक लिंक्स आणत आहे…" },
   loadingVideos:       { en: "Checking your news channels…", mr: "तुमचे न्यूज चॅनेल्स तपासत आहे…" },
@@ -20,12 +22,16 @@ const STR = {
   emptyArticlesBody:   { en: "No sheet is connected. Paste your published Google Sheet link into articlesCsvUrl at the top of app.js.", mr: "कोणतीही शीट जोडलेली नाही. app.js च्या सुरुवातीला articlesCsvUrl मध्ये तुमच्या प्रकाशित Google Sheet ची लिंक टाका." },
   emptyBulletinTitle:  { en: "No picks for today", mr: "आजसाठी कोणतीही निवड नाही" },
   emptyBulletinBody:   { en: "Tag a row's Tab column as \"Bulletin\" in your sheet to feature it here.", mr: "इथे दाखवण्यासाठी तुमच्या शीटमध्ये एका ओळीच्या Tab स्तंभात \"Bulletin\" असे लिहा." },
-  emptyVideosTitle:    { en: "No channels yet", mr: "अजून चॅनेल्स नाहीत" },
-  emptyVideosBody:     { en: "No channel sheet is connected. Paste your published sheet link into channelsCsvUrl at the top of app.js.", mr: "कोणतीही चॅनेल शीट जोडलेली नाही. app.js मध्ये channelsCsvUrl मध्ये तुमच्या शीटची लिंक टाका." },
+  emptyLiveTitle:      { en: "No channels yet", mr: "अजून चॅनेल्स नाहीत" },
+  emptyLiveBody:       { en: "No channel sheet is connected. Paste your published sheet link into channelsCsvUrl in config.js.", mr: "कोणतीही चॅनेल शीट जोडलेली नाही. config.js मध्ये channelsCsvUrl मध्ये तुमच्या शीटची लिंक टाका." },
+  emptyVideoSheetTitle: { en: "No videos yet", mr: "अजून व्हिडिओ नाहीत" },
+  emptyVideoSheetBody: { en: "No video sheet is connected. Paste your published sheet link into videosCsvUrl in config.js — or share a video from your phone.", mr: "कोणतीही व्हिडिओ शीट जोडलेली नाही. config.js मध्ये videosCsvUrl मध्ये तुमच्या शीटची लिंक टाका — किंवा तुमच्या फोनवरून एक व्हिडिओ शेअर करा." },
   errorArticlesTitle:  { en: "Couldn't load your articles", mr: "तुमचे लेख लोड करता आले नाहीत" },
   errorArticlesBody:   { en: "Check that the sheet is published to the web as CSV, and that the link in articlesCsvUrl is correct.", mr: "शीट CSV म्हणून वेबवर प्रकाशित आहे का आणि articlesCsvUrl मधील लिंक बरोबर आहे का ते तपासा." },
-  errorVideosTitle:    { en: "Couldn't load some channels", mr: "काही चॅनेल्स लोड करता आले नाहीत" },
-  errorVideosBody:     { en: "This can happen if the relay service is briefly down. Try again in a moment.", mr: "रिले सेवा तात्पुरती बंद असल्यास असे होऊ शकते. थोड्या वेळाने पुन्हा प्रयत्न करा." },
+  errorLiveTitle:      { en: "Couldn't load some channels", mr: "काही चॅनेल्स लोड करता आले नाहीत" },
+  errorLiveBody:       { en: "This can happen if the relay service is briefly down. Try again in a moment.", mr: "रिले सेवा तात्पुरती बंद असल्यास असे होऊ शकते. थोड्या वेळाने पुन्हा प्रयत्न करा." },
+  errorVideoSheetTitle: { en: "Couldn't load your videos", mr: "तुमचे व्हिडिओ लोड करता आले नाहीत" },
+  errorVideoSheetBody: { en: "Check that the sheet is published to the web as CSV, and that the link in videosCsvUrl is correct.", mr: "शीट CSV म्हणून वेबवर प्रकाशित आहे का आणि videosCsvUrl मधील लिंक बरोबर आहे का ते तपासा." },
   categoriesSoonTitle: { en: "Categories are coming next", mr: "विभाग लवकरच येत आहेत" },
   categoriesSoonBody:  { en: "Once your feed has enough curated stories, this tab will let you browse by beat.", mr: "तुमच्या फीडमध्ये पुरेशा निवडक बातम्या झाल्यावर, या टॅबमध्ये तुम्ही विषयानुसार बातम्या पाहू शकाल." },
   editionLabel:        { en: "Personal Edition", mr: "वैयक्तिक आवृत्ती" },
@@ -40,17 +46,20 @@ function t(key, lang) {
    ================================================================== */
 const state = {
   lang: "en",
-  tab: "bulletin", // bulletin | feed | live | categories
+  tab: "bulletin", // bulletin | feed | live | videos | categories
   articles: null,      // parsed rows, or null before first fetch
   articlesError: false,
-  videos: null,
+  videos: null,        // channel-pulled Live News only
   videosError: false,
+  manualVideos: null,  // individually shared/curated videos (Videos tab)
+  manualVideosError: false,
 };
 
 const TABS = [
   { id: "bulletin",   labelKey: "tabBulletin" },
   { id: "feed",        labelKey: "tabFeed" },
   { id: "live",        labelKey: "tabLive" },
+  { id: "videos",      labelKey: "tabVideos" },
   { id: "categories",  labelKey: "tabCategories", disabled: true },
 ];
 
@@ -93,6 +102,31 @@ const CHANNEL_KEYMAP = {
   category: "category",
   language: "language",
 };
+
+const VIDEO_KEYMAP = {
+  videolink: "link",
+  title: "title",
+  channelname: "channelName",
+  category: "category",
+  language: "language",
+  dateadded: "dateAdded",
+};
+
+function youtubeThumbFromUrl(url) {
+  try {
+    const u = new URL(url);
+    let id = "";
+    if (u.hostname.includes("youtu.be")) {
+      id = u.pathname.slice(1);
+    } else if (u.hostname.includes("youtube.com")) {
+      if (u.pathname === "/watch") id = u.searchParams.get("v") || "";
+      else if (u.pathname.startsWith("/shorts/")) id = u.pathname.split("/")[2] || "";
+    }
+    return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : "";
+  } catch (e) {
+    return "";
+  }
+}
 
 function parseSheetDate(raw) {
   const s = String(raw || "").trim();
@@ -215,20 +249,14 @@ function parseYoutubeFeed(xmlText, channelMeta) {
   });
 }
 
-function loadVideos() {
-  if (!CONFIG.channelsCsvUrl) {
-    state.videos = [];
-    render();
-    return;
-  }
-  fetchCsv(CONFIG.channelsCsvUrl, CHANNEL_KEYMAP)
+function loadChannelVideos() {
+  if (!CONFIG.channelsCsvUrl) return Promise.resolve({ items: [], failed: false });
+
+  return fetchCsv(CONFIG.channelsCsvUrl, CHANNEL_KEYMAP)
     .then((channels) => {
       const withIds = channels.filter((c) => c.channelId);
-      if (withIds.length === 0) {
-        state.videos = [];
-        render();
-        return;
-      }
+      if (withIds.length === 0) return { items: [], failed: false };
+
       const requests = withIds.map((ch) => {
         const feedUrl = `https://www.youtube.com/feeds/videos.xml?channel_id=${encodeURIComponent(ch.channelId)}`;
         const proxied = CONFIG.corsProxyForYouTube + encodeURIComponent(feedUrl);
@@ -241,24 +269,58 @@ function loadVideos() {
           .catch(() => ({ __failed: true }));
       });
 
-      Promise.all(requests).then((results) => {
-        let anyFailed = false;
-        let merged = [];
+      return Promise.all(requests).then((results) => {
+        let failed = false;
+        let items = [];
         results.forEach((r) => {
-          if (r && r.__failed) { anyFailed = true; return; }
-          merged = merged.concat(r);
+          if (r && r.__failed) { failed = true; return; }
+          items = items.concat(r);
         });
-        merged.sort((a, b) => new Date(b.published) - new Date(a.published));
-        state.videos = merged.slice(0, CONFIG.maxLiveVideos);
-        state.videosError = anyFailed && merged.length === 0;
-        render();
+        return { items, failed };
       });
     })
+    .catch(() => ({ items: [], failed: true }));
+}
+
+function loadManualVideos() {
+  if (!CONFIG.videosCsvUrl) {
+    state.manualVideos = [];
+    render();
+    return;
+  }
+  fetchCsv(CONFIG.videosCsvUrl, VIDEO_KEYMAP)
+    .then((rows) => {
+      const items = rows
+        .filter((r) => r.link)
+        .map((r) => ({
+          title: r.title || r.link,
+          link: r.link,
+          published: (parseSheetDate(r.dateAdded) || new Date(0)).toISOString(),
+          thumb: youtubeThumbFromUrl(r.link),
+          channelName: r.channelName || "",
+          category: r.category || "",
+          language: r.language || "",
+        }));
+      items.sort((a, b) => new Date(b.published) - new Date(a.published));
+      state.manualVideos = items;
+      state.manualVideosError = false;
+      render();
+    })
     .catch(() => {
-      state.videos = [];
-      state.videosError = true;
+      state.manualVideos = [];
+      state.manualVideosError = true;
       render();
     });
+}
+
+function loadLiveNews() {
+  loadChannelVideos().then((result) => {
+    const items = result.items.slice();
+    items.sort((a, b) => new Date(b.published) - new Date(a.published));
+    state.videos = items.slice(0, CONFIG.maxLiveVideos);
+    state.videosError = result.failed && items.length === 0;
+    render();
+  });
 }
 
 /* ==================================================================
@@ -352,10 +414,27 @@ function renderLive() {
     <p class="section-label">${escapeHtml(t("tabLive", state.lang))}</p>
     <p class="section-sub">${escapeHtml(t("liveSub", state.lang))}</p>`;
   if (rows.length === 0 && state.videosError) {
-    return header + renderStateBlock({ title: t("errorVideosTitle", state.lang), body: t("errorVideosBody", state.lang) });
+    return header + renderStateBlock({ title: t("errorLiveTitle", state.lang), body: t("errorLiveBody", state.lang) });
   }
   if (rows.length === 0) {
-    return header + renderStateBlock({ title: t("emptyVideosTitle", state.lang), body: t("emptyVideosBody", state.lang) });
+    return header + renderStateBlock({ title: t("emptyLiveTitle", state.lang), body: t("emptyLiveBody", state.lang) });
+  }
+  return header + `<div class="video-list">${rows.map(videoRowHtml).join("")}</div>`;
+}
+
+function renderVideos() {
+  if (state.manualVideos === null) {
+    return renderStateBlock({ title: t("loadingVideos", state.lang), body: "", loading: true });
+  }
+  const rows = langFilter(state.manualVideos);
+  const header = `
+    <p class="section-label">${escapeHtml(t("tabVideos", state.lang))}</p>
+    <p class="section-sub">${escapeHtml(t("videosSub", state.lang))}</p>`;
+  if (rows.length === 0 && state.manualVideosError) {
+    return header + renderStateBlock({ title: t("errorVideoSheetTitle", state.lang), body: t("errorVideoSheetBody", state.lang) });
+  }
+  if (rows.length === 0) {
+    return header + renderStateBlock({ title: t("emptyVideoSheetTitle", state.lang), body: t("emptyVideoSheetBody", state.lang) });
   }
   return header + `<div class="video-list">${rows.map(videoRowHtml).join("")}</div>`;
 }
@@ -411,6 +490,7 @@ function render() {
   if (state.tab === "bulletin") content.innerHTML = renderBulletin();
   else if (state.tab === "feed") content.innerHTML = renderFeed();
   else if (state.tab === "live") content.innerHTML = renderLive();
+  else if (state.tab === "videos") content.innerHTML = renderVideos();
   else content.innerHTML = renderCategories();
 }
 
@@ -424,7 +504,8 @@ document.getElementById("langSelect").addEventListener("change", (e) => {
 
 render();
 loadArticles();
-loadVideos();
+loadLiveNews();
+loadManualVideos();
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
