@@ -13,7 +13,11 @@ const CONFIG = {
   // Published-to-web CSV link for your YOUTUBE CHANNELS sheet
   // (same steps, but select the "Channels" tab).
   channelsCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQXziCENzYg2-xyJkim6bxJDrC5DYIo8ftQVaPUdwGb5EnNse4uo-QL1aC9OB9XkUldv0KXmXEKp57D/pub?gid=1084955648&single=true&output=csv",
-
+   
+ // Published-to-web CSV link for your VIDEOS sheet — individually
+  // shared/curated videos. These show in their own Videos tab,
+  // separate from the auto-pulled channel uploads in Live News.
+  videosCsvUrl: "https://docs.google.com/spreadsheets/d/e/2PACX-1vQXziCENzYg2-xyJkim6bxJDrC5DYIo8ftQVaPUdwGb5EnNse4uo-QL1aC9OB9XkUldv0KXmXEKp57D/pub?gid=2097242271&single=true&output=csv",
   // Used only to read YouTube's public per-channel RSS feeds from
   // the browser (YouTube does not allow direct cross-origin reads).
   // This is a third-party relay with no uptime guarantee — swap it
